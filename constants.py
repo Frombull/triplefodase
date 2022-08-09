@@ -1,9 +1,10 @@
+GREEN_MIN = [45, 254, 254]
+GREEN_MAX = [65, 255, 255]
 
-GREEN_MIN = (120, 75, 45)
-GREEN_MAX = (120, 100, 50)
+BLUE_MIN = [100, 254, 254]
+BLUE_MAX = [130, 255, 255]
 
-BLUE_MIN = (200, 85, 45)
-BLUE_MAX = (211, 87, 48)
+CHALLANGE_BUTTON_SAMPLE = 'images/challange_button.jpg'
 
 SCREEN_RES = {
     'top': 0,
