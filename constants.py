@@ -4,6 +4,9 @@ GREEN_MAX = [65, 255, 255]
 BLUE_MIN = [100, 254, 254]
 BLUE_MAX = [130, 255, 255]
 
+YELLOW_MIN = [20, 254, 254]
+YELLOW_MAX = [35, 255, 255]
+
 CHALLANGE_BUTTON_SAMPLE = 'images/challange_button.jpg'
 
 SCREEN_RES = {
