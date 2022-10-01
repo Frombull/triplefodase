@@ -82,6 +82,59 @@ def play_card(blue_mask, green_mask, yellow_mask):
     pyautogui.click()
 
 
+# def adjust_size(frame_bgr) -> Image:
+#    start_point = (,)
+#    end_point = (,)
+#    color = (255, 0, 0)  # BGR
+#    thickness = 2
+#
+#    frame_bgr = cv2.rectangle(frame_bgr, start_point, end_point, color, thickness)
+#
+#    cv2.imshow("Original (BGR)", frame_bgr)
+#    cv2.waitKey(1)
+#
+#    return frame_bgr
+
+def registration_window(frame_bgr) -> Image:
+    frame_original = frame_bgr
+    frame_gray = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2GRAY)
+    window_template = cv2.imread('images/match_registration.jpg', 0)
+    button_template = cv2.imread('images/challenge_button.jpg', 0)
+
+    result = cv2.matchTemplate(frame_gray, window_template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+
+    threshold = 0.92
+    if(max_val < threshold):
+        return frame_bgr
+
+    ## Find registration window pos
+    top_left = max_loc
+    height, width = window_template.shape[:2]
+    bottom_right = (top_left[0] + width, top_left[1] + height)
+
+    ## Write on image
+    text_bottom_left = (top_left[0], top_left[1] - 12)
+    cv2.putText(frame_bgr, 'Registration Window', text_bottom_left, cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(250, 0, 10), thickness=1, lineType=2)
+    cv2.rectangle(frame_bgr, top_left, bottom_right, (250, 0, 10), 5)
+
+    ## Cropped image
+    print(f'{top_left[0]} | {top_left[1]} ||||| {bottom_right[0]} | {bottom_right[1]}')
+    cropped = frame_original[top_left[0]:top_left[1], bottom_right[0]:bottom_right[1]]
+
+    ## Find button pos
+    # result = cv2.matchTemplate(frame_gray, button_template, cv2.TM_CCOEFF_NORMED)
+    # min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    #
+    # threshold = 0.92
+    # if(max_val < threshold):
+    #     return frame_bgr
+
+
+
+    return cropped
+
+
 def main():
     while True:
         ##Take screenshot
@@ -97,17 +150,21 @@ def main():
         yellow_mask = get_mask(frame_hsv, 'yellow')
 
         ## Draw center of cards
-        #cv2.circle(frame_bgr, (cX, cY), 20, (0, 0, 250), 20)
+        # cv2.circle(frame_bgr, (cX, cY), 20, (0, 0, 250), 20)
 
-        ##Resize image to 80%
-        #frame_bgr = cv2.resize(frame_bgr, None, fx=0.8, fy=0.8)
-        #frame_hsv = cv2.resize(frame_hsv, None, fx=0.8, fy=0.8)
+        ##Resize images
+        #frame_bgr = cv2.resize(frame_bgr, None, fx=0.5, fy=0.5)
+        #frame_hsv = cv2.resize(frame_hsv, None, fx=0.5, fy=0.5)
+
+        ##
+        registration_window_image = registration_window(frame_bgr)
 
         ##Show images
-        # cv2.imshow("Blue mask", blue_mask)
-        # cv2.imshow("Green mask", green_mask)
+        #cv2.imshow("Blue mask", blue_mask)
+        #cv2.imshow("Green mask", green_mask)
         #cv2.imshow("Original (BGR)", frame_bgr)
-        #cv2.waitKey(1)
+        cv2.imshow("Registration Window", registration_window_image)
+        cv2.waitKey(1)
 
         ##Stop the bot
         if keyboard.is_pressed('q'):
@@ -116,6 +173,8 @@ def main():
             quit()
         if keyboard.is_pressed('r'):
             play_card(blue_mask, green_mask, yellow_mask)
+        if keyboard.is_pressed('t'):
+            pass
 
 
 if __name__ == '__main__':
